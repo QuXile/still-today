@@ -402,6 +402,7 @@
       <div class="toggles">
         <Toggle checked={app.autostart} label={t('settings.autostart')} onchange={(v) => void app.setAutostart(v)} />
         <Toggle checked={app.data.settings.topmost} label={t('settings.topmost')} onchange={(v) => app.setTopmost(v)} />
+        <Toggle checked={app.data.settings.raiseOnClick} label={t('settings.raiseOnClick')} onchange={(v) => app.setRaiseOnClick(v)} />
         <Toggle checked={app.data.settings.locked} label={t('settings.locked')} onchange={(v) => app.setLocked(v)} />
       </div>
     </section>

@@ -111,6 +111,9 @@ internal sealed class Bridge
             case "topmost":
                 _form.SetTopmost((bool)p["on"]);
                 return null;
+            case "raiseOnClick":
+                _form.SetRaiseOnClick((bool)p["on"]);
+                return null;
             case "autostart":
                 AutoStart = (bool)p["on"];
                 return AutoStart;

@@ -33,6 +33,7 @@ internal sealed class WidgetForm : Form
     private System.Drawing.Point _home;
     private bool _topmost;
     private bool _presented;
+    private bool _raiseOnClick;
     private bool _placed;
     private int _animation;
     private bool _dragging;
@@ -189,10 +190,16 @@ internal sealed class WidgetForm : Form
     protected override void OnDeactivate(EventArgs e)
     {
         base.OnDeactivate(e);
-        if (!_presented) return;
-        _presented = false;
-        var after = _desktopShown ? Native.HWND_TOPMOST : Native.HWND_BOTTOM;
-        Native.SetWindowPos(Handle, after, 0, 0, 0, 0, Native.SWP_NOMOVE | Native.SWP_NOSIZE | Native.SWP_NOACTIVATE);
+        if (_presented)
+        {
+            _presented = false;
+            var after = _desktopShown ? Native.HWND_TOPMOST : Native.HWND_BOTTOM;
+            Native.SetWindowPos(Handle, after, 0, 0, 0, 0, Native.SWP_NOMOVE | Native.SWP_NOSIZE | Native.SWP_NOACTIVATE);
+            return;
+        }
+        if (_raiseOnClick && !_topmost && !_desktopShown && Visible)
+            Native.SetWindowPos(Handle, Native.HWND_BOTTOM, 0, 0, 0, 0,
+                Native.SWP_NOMOVE | Native.SWP_NOSIZE | Native.SWP_NOACTIVATE);
     }
 
     private void OnForegroundChanged(IntPtr hook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint thread, uint time)
@@ -246,6 +253,14 @@ internal sealed class WidgetForm : Form
             Native.SWP_NOMOVE | Native.SWP_NOSIZE | Native.SWP_NOACTIVATE);
         if (!value)
             Native.SetWindowPos(Handle, _desktopShown ? Native.HWND_TOPMOST : Native.HWND_BOTTOM, 0, 0, 0, 0,
+                Native.SWP_NOMOVE | Native.SWP_NOSIZE | Native.SWP_NOACTIVATE);
+    }
+
+    public void SetRaiseOnClick(bool value)
+    {
+        _raiseOnClick = value;
+        if (!value && !_topmost && !_presented && !_desktopShown && Visible)
+            Native.SetWindowPos(Handle, Native.HWND_BOTTOM, 0, 0, 0, 0,
                 Native.SWP_NOMOVE | Native.SWP_NOSIZE | Native.SWP_NOACTIVATE);
     }
 
@@ -523,7 +538,7 @@ internal sealed class WidgetForm : Form
                         pos.hwndInsertAfter = Native.HWND_TOPMOST;
                         changed = true;
                     }
-                    else if (!_presented && !_desktopShown)
+                    else if (!_presented && !_desktopShown && !_raiseOnClick)
                     {
                         // A desktop widget sits under ordinary windows even after it is clicked.
                         // While the desktop is raised, leave the dynamic raise alone. When

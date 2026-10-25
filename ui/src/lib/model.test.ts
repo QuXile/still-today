@@ -16,6 +16,12 @@ describe('appearance', () => {
     expect(settings({ aura: false, mode: 'auto' })).toMatchObject({ aura: false, mode: 'auto' });
     expect(settings({})).toMatchObject({ aura: true, mode: 'auto' });
   });
+
+  it('defaults raise-on-click off and only keeps a real boolean', () => {
+    expect(settings({})).toMatchObject({ raiseOnClick: false });
+    expect(settings({ raiseOnClick: true })).toMatchObject({ raiseOnClick: true });
+    expect(settings({ raiseOnClick: 'yes' })).toMatchObject({ raiseOnClick: false });
+  });
 });
 
 describe('a damaged save', () => {

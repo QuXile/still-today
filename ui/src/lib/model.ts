@@ -13,6 +13,8 @@ export interface Settings {
   mode: Mode;
   lang: Lang;
   topmost: boolean;
+  /** Whether clicking the widget raises it above overlapping windows until another window is activated. */
+  raiseOnClick: boolean;
   locked: boolean;
   /** Last focus length chosen, so the next session starts from it. */
   focusSeconds: number;
@@ -193,7 +195,7 @@ export interface Data {
 export function emptyData(lang: Lang): Data {
   return {
     v: 1,
-    settings: { aura: true, mode: 'auto', lang, topmost: false, locked: false, focusSeconds: 25 * 60, notifications: true, courseNames: {}, hiddenCourses: [] },
+    settings: { aura: true, mode: 'auto', lang, topmost: false, raiseOnClick: false, locked: false, focusSeconds: 25 * 60, notifications: true, courseNames: {}, hiddenCourses: [] },
     canvas: { host: null, user: null, tokenExpires: null, tokenExpiresFromCanvas: false, lastSync: null, error: null, colors: {}, courses: {}, announcementsSeen: null, announcementsViewed: null },
     feeds: [],
     assignments: {},
@@ -282,6 +284,7 @@ export function normalize(raw: Partial<Data>, lang: Lang): Data {
     settings: {
       ...settings,
       lang: settings.lang === 'zh' || settings.lang === 'en' ? settings.lang : lang,
+      raiseOnClick: settings.raiseOnClick === true,
       focusSeconds: Number.isFinite(seconds) && seconds >= 1 && seconds <= 10 * 3600 ? seconds : base.settings.focusSeconds,
       courseNames: record(settings.courseNames),
       hiddenCourses: Array.isArray(settings.hiddenCourses) ? settings.hiddenCourses.filter((id) => typeof id === 'string') : [],

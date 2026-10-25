@@ -155,6 +155,7 @@ class Store {
 
     this.applyTheme();
     if (this.data.settings.topmost) void call('topmost', { on: true });
+    if (this.data.settings.raiseOnClick) void call('raiseOnClick', { on: true });
     this.restoreTimer();
     this.tick();
     this.updateTray();
@@ -278,6 +279,12 @@ class Store {
   setTopmost(on: boolean): void {
     this.data.settings.topmost = on;
     void call('topmost', { on });
+    this.persist();
+  }
+
+  setRaiseOnClick(on: boolean): void {
+    this.data.settings.raiseOnClick = on;
+    void call('raiseOnClick', { on });
     this.persist();
   }
 
